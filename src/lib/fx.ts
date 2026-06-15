@@ -12,6 +12,14 @@ export function otherToken(t: FxToken): FxToken {
   return t === "USDC" ? "EURC" : "USDC";
 }
 
+export function isSupportedSwapRoute(from: FxToken, to: FxToken): boolean {
+  return from === "USDC" && to === "EURC";
+}
+
+export function unsupportedSwapRouteMessage(from: FxToken, to: FxToken): string {
+  return `${from} → ${to} swaps are not available on Arc Testnet yet. Try USDC → EURC instead.`;
+}
+
 export function bpsToPercent(bps: number) {
   return bps / 100;
 }

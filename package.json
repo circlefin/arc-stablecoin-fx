@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "test": "tsx --test src/lib/*.test.ts",
     "start": "next start",
     "lint": "eslint",
     "db:start": "supabase start",
@@ -42,6 +43,7 @@
     "eslint-config-next": "16.2.4",
     "supabase": "^2.95.5",
     "tailwindcss": "^4",
+    "tsx": "^4.22.4",
     "typescript": "^5"
   }
 }

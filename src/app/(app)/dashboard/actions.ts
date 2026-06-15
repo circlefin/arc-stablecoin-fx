@@ -6,7 +6,12 @@ import { z } from "zod";
 import { estimateSwap, executeSwap } from "@/lib/appkit/swap";
 import { getFxBalances } from "@/lib/circle/wallets";
 import { serverEnv } from "@/lib/config";
-import { FX_TOKENS, type FxToken } from "@/lib/fx";
+import {
+  FX_TOKENS,
+  isSupportedSwapRoute,
+  unsupportedSwapRouteMessage,
+  type FxToken,
+} from "@/lib/fx";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -46,6 +51,9 @@ export async function quoteSwap(input: {
   const parsed = quoteSchema.safeParse(input);
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid quote input" };
+  }
+  if (!isSupportedSwapRoute(parsed.data.from, parsed.data.to)) {
+    return { ok: false, error: unsupportedSwapRouteMessage(parsed.data.from, parsed.data.to) };
   }
   try {
     const { profile } = await getProfile();
@@ -95,6 +103,9 @@ export async function executeSwapAction(input: {
   if (!parsed.success) {
     console.error("[executeSwapAction] validation failed", parsed.error.issues);
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+  if (!isSupportedSwapRoute(parsed.data.from, parsed.data.to)) {
+    return { ok: false, error: unsupportedSwapRouteMessage(parsed.data.from, parsed.data.to) };
   }
 
   let user;
