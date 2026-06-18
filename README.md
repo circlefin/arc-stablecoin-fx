@@ -38,10 +38,14 @@ cp .env.example .env.local
 ```
 
 - `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` /
-`SUPABASE_SECRET_KEY` - from `npm run db:status`.
+  `SUPABASE_SECRET_KEY` - from `npm run db:status`.
 - `CIRCLE_API_KEY` - from the Circle console.
 - `CIRCLE_ENTITY_SECRET` - your 32-byte hex entity secret. Must be registered
-with Circle once before use.
+  with Circle once before use.
+- `CIRCLE_WEBHOOK_SECRET` - optional extra shared secret for the Circle webhook
+  endpoint. When set, webhook requests must include
+  `Authorization: Bearer <CIRCLE_WEBHOOK_SECRET>` in addition to Circle's
+  `X-Circle-Signature` and `X-Circle-Key-Id` headers.
 - `CIRCLE_BLOCKCHAIN` - Circle blockchain identifier (default `ARC-TESTNET`).
 - `KIT_KEY` - Circle App Kit key.
 - `NEXT_PUBLIC_ARC_CHAIN` - App Kit chain identifier (default `Arc_Testnet`).
