@@ -94,10 +94,12 @@ export async function executeSwap({
     kitKey: env.KIT_KEY,
     slippageBps,
     ...(stopLimit ? { stopLimit } : {}),
-    customFee: {
-      percentageBps: env.APP_FEE_BPS,
-      recipientAddress: env.APP_FEE_RECIPIENT,
-    },
+    customFee: env.APP_FEE_RECIPIENT
+      ? {
+          percentageBps: env.APP_FEE_BPS,
+          recipientAddress: env.APP_FEE_RECIPIENT,
+        }
+      : undefined,
   };
   const params = {
     from: { adapter: adapter(), chain: chain(), address: walletAddress },
