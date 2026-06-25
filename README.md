@@ -2,6 +2,8 @@
 
 This sample app demonstrates stablecoin FX swaps between USDC and EURC using the App Kits Swap SDK and Circle Developer Controlled Wallets on Arc.
 
+<img alt="Arc Stablecoin Fx" src="public/screenshot.png" />
+
 ## Getting started
 
 ### Prerequisites
@@ -61,7 +63,7 @@ npm run wallet:generate
 npm run dev
 ```
 
-App is at [http://localhost:3000](http://localhost:3000).
+App is running at [http://localhost:3000](http://localhost:3000).
 
 ## Project layout
 
