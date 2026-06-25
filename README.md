@@ -1,8 +1,6 @@
-# arc-stablecoin-fx
+# Arc Stablecoin FX
 
 This sample app demonstrates stablecoin FX swaps between USDC and EURC using the App Kits Swap SDK and Circle Developer Controlled Wallets on Arc.
-
-<img alt="Arc Stablecoin Fx" src="public/screenshot.png" />
 
 ## Getting started
 
@@ -38,10 +36,10 @@ cp .env.example .env.local
 ```
 
 - `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` /
-  `SUPABASE_SECRET_KEY` - from `npm run db:status`.
+`SUPABASE_SECRET_KEY` - from `npm run db:status`.
 - `CIRCLE_API_KEY` - from the Circle console.
 - `CIRCLE_ENTITY_SECRET` - your 32-byte hex entity secret. Must be registered
-  with Circle once before use.
+with Circle once before use.
 - `CIRCLE_BLOCKCHAIN` - Circle blockchain identifier (default `ARC-TESTNET`).
 - `KIT_KEY` - Circle App Kit key.
 - `NEXT_PUBLIC_ARC_CHAIN` - App Kit chain identifier (default `Arc_Testnet`).
@@ -63,7 +61,7 @@ npm run wallet:generate
 npm run dev
 ```
 
-App is at http://localhost:3000.
+App is at [http://localhost:3000](http://localhost:3000).
 
 ## Project layout
 
@@ -76,3 +74,7 @@ App is at http://localhost:3000.
 - `src/lib/supabase/` - Supabase client/server/admin helpers
 - `supabase/migrations/` - database schema
 - `scripts/` - one-off operator scripts
+
+## Legal
+
+Sample apps provided for demonstration and educational purposes only, intended for Arc testnet use only, and not production-ready. See [Arc.io](https://arc.io) for more.
