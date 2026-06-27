@@ -25,7 +25,7 @@ const serverSchema = z.object({
   CIRCLE_WEBHOOK_SECRET: z.string().min(1).optional(),
   KIT_KEY: z.string().min(1),
   APP_FEE_BPS: z.coerce.number().int().min(0).max(10_000).default(25),
-  APP_FEE_RECIPIENT: z.string().regex(/^0x[0-9a-fA-F]{40}$/, "must be a 0x-prefixed EVM address"),
+  APP_FEE_RECIPIENT: z.string().regex(/^0x[0-9a-fA-F]{40}$/, "must be a 0x-prefixed EVM address").optional(),
   SUPABASE_SECRET_KEY: z.string().min(1),
 });
 
