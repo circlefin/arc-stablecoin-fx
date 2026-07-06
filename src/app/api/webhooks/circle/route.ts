@@ -17,10 +17,13 @@
  */
 
 import { z } from "zod";
+import crypto from "crypto";
 
 import { getFxBalances } from "@/lib/circle/wallets";
 import { serverEnv } from "@/lib/config";
 import { createAdminClient } from "@/lib/supabase/admin";
+
+const publicKeyCache = new Map<string, string>();
 
 // Circle sends a HEAD request to verify the endpoint is reachable.
 export function HEAD() {
@@ -54,6 +57,17 @@ export async function POST(request: Request) {
     rawBody = await request.text();
   } catch {
     return new Response("Bad Request", { status: 400 });
+  }
+
+  const signature = request.headers.get("x-circle-signature");
+  const keyId = request.headers.get("x-circle-key-id");
+  if (!signature || !keyId) {
+    return new Response("Missing Circle signature headers", { status: 400 });
+  }
+
+  const isVerified = await verifyCircleSignature(rawBody, signature, keyId, env.CIRCLE_API_KEY);
+  if (!isVerified) {
+    return new Response("Invalid Circle signature", { status: 403 });
   }
 
   let body: unknown;
@@ -135,4 +149,50 @@ async function handleInboundComplete(walletId?: string, destinationAddress?: str
   } catch (err) {
     console.error("[webhook/circle] balance update failed", err);
   }
+}
+
+async function verifyCircleSignature(
+  body: string,
+  signature: string,
+  keyId: string,
+  apiKey: string,
+): Promise<boolean> {
+  try {
+    const publicKey = await getCirclePublicKey(keyId, apiKey);
+    const verifier = crypto.createVerify("SHA256");
+    verifier.update(body, "utf8");
+    verifier.end();
+    return verifier.verify(publicKey, Buffer.from(signature, "base64"));
+  } catch (err) {
+    console.warn("[webhook/circle] signature verification failed", err);
+    return false;
+  }
+}
+
+async function getCirclePublicKey(keyId: string, apiKey: string): Promise<string> {
+  const cached = publicKeyCache.get(keyId);
+  if (cached) return cached;
+
+  const response = await fetch(`https://api.circle.com/v2/notifications/publicKey/${keyId}`, {
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+  });
+  if (!response.ok) {
+    throw new Error(`failed to fetch Circle public key: ${response.status}`);
+  }
+
+  const data: unknown = await response.json();
+  const publicKey = z
+    .object({ data: z.object({ publicKey: z.string().min(1) }) })
+    .parse(data).data.publicKey;
+  const pem = [
+    "-----BEGIN PUBLIC KEY-----",
+    ...(publicKey.match(/.{1,64}/g) ?? []),
+    "-----END PUBLIC KEY-----",
+  ].join("\n");
+
+  publicKeyCache.set(keyId, pem);
+  return pem;
 }
