@@ -194,11 +194,11 @@ export function TradesTable({
     <div className="space-y-3">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <Input
-          placeholder="Search by transaction hash"
+          placeholder="Search transactions"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="sm:max-w-sm"
-          aria-label="Search by transaction hash"
+          aria-label="Search transactions"
         />
         <div className="flex items-center gap-2">
           <Select value={statusFilter} onValueChange={(value) => {
@@ -249,7 +249,9 @@ export function TradesTable({
             {rows.length === 0 ? (
               <tr>
                 <td colSpan={7} className="px-3 py-6 text-center text-sm text-muted-foreground">
-                  {debouncedSearch ? "No matches." : "No trades yet."}
+                  {debouncedSearch || statusFilter !== "all"
+                    ? "No matching trades."
+                    : "No trades yet."}
                 </td>
               </tr>
             ) : (
