@@ -49,8 +49,10 @@ import {
   bpsToPercent,
   formatAmount,
   isPositiveDecimal,
+  isUnsupportedSwapDirection,
   otherToken,
   SLIPPAGE_PRESETS_BPS,
+  UNSUPPORTED_DIRECTION_MESSAGE,
   type FxToken,
 } from "@/lib/fx";
 import { createClient } from "@/lib/supabase/client";
@@ -75,6 +77,7 @@ export function SwapPanel({ userId, balances: initialBalances }: { userId: strin
   const router = useRouter();
 
   const balanceFor = (t: FxToken) => (t === "USDC" ? balances.usdc : balances.eurc);
+  const unsupportedDirection = isUnsupportedSwapDirection(from, to);
 
   if (
     prevInitialBalances.usdc !== initialBalances.usdc ||
@@ -122,6 +125,13 @@ export function SwapPanel({ userId, balances: initialBalances }: { userId: strin
         }
         return;
       }
+      if (unsupportedDirection) {
+        if (id === requestId.current) {
+          setQuote({ ok: false, error: UNSUPPORTED_DIRECTION_MESSAGE });
+          setQuoting(false);
+        }
+        return;
+      }
       setQuoting(true);
       const result = await quoteSwap({ from, to, amountIn });
       if (id !== requestId.current) return;
@@ -132,7 +142,7 @@ export function SwapPanel({ userId, balances: initialBalances }: { userId: strin
       }
     }, 350);
     return () => window.clearTimeout(handle);
-  }, [amountIn, from, to, slippageBps, minOutTouched]);
+  }, [amountIn, from, to, slippageBps, minOutTouched, unsupportedDirection]);
 
   const insufficient = useMemo(() => {
     if (!isPositiveDecimal(amountIn)) return false;
@@ -143,6 +153,7 @@ export function SwapPanel({ userId, balances: initialBalances }: { userId: strin
     quote?.ok &&
     isPositiveDecimal(amountIn) &&
     !insufficient &&
+    !unsupportedDirection &&
     !quoting &&
     !executing;
 
@@ -355,9 +366,11 @@ export function SwapPanel({ userId, balances: initialBalances }: { userId: strin
           >
             {executing
               ? "Executing…"
-              : Number(balanceFor(from)) === 0
-                ? `Get ${from} from the faucet`
-                : `Swap ${from} → ${to}`}
+              : unsupportedDirection
+                ? `${from} → ${to} not supported yet`
+                : Number(balanceFor(from)) === 0
+                  ? `Get ${from} from the faucet`
+                  : `Swap ${from} → ${to}`}
           </Button>
         </div>
       </div>

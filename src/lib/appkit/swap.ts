@@ -22,7 +22,7 @@ import { AppKit, SwapChain } from "@circle-fin/app-kit";
 import { createCircleWalletsAdapter } from "@circle-fin/adapter-circle-wallets";
 
 import { clientEnv, serverEnv } from "@/lib/config";
-import type { FxToken } from "@/lib/fx";
+import { isUnsupportedSwapDirection, UNSUPPORTED_DIRECTION_MESSAGE, type FxToken } from "@/lib/fx";
 
 let cachedKit: AppKit | null = null;
 let cachedAdapter: ReturnType<typeof createCircleWalletsAdapter> | null = null;
@@ -72,6 +72,9 @@ export async function estimateSwap({
   tokenOut,
   amountIn,
 }: QuoteInput): Promise<QuoteResult> {
+  if (isUnsupportedSwapDirection(tokenIn, tokenOut)) {
+    throw new Error(UNSUPPORTED_DIRECTION_MESSAGE);
+  }
   const env = serverEnv();
   const result = await kit().estimateSwap({
     from: { adapter: adapter(), chain: chain(), address: walletAddress },
@@ -107,6 +110,9 @@ export async function executeSwap({
   slippageBps,
   stopLimit,
 }: ExecuteInput): Promise<ExecuteResult> {
+  if (isUnsupportedSwapDirection(tokenIn, tokenOut)) {
+    throw new Error(UNSUPPORTED_DIRECTION_MESSAGE);
+  }
   const env = serverEnv();
   const baseConfig = {
     kitKey: env.KIT_KEY,
