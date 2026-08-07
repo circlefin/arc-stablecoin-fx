@@ -1,0 +1,10 @@
+process.env.CIRCLE_API_KEY ??= "test-api-key";
+process.env.CIRCLE_ENTITY_SECRET ??= "0".repeat(64);
+process.env.CIRCLE_BLOCKCHAIN ??= "ARC-TESTNET";
+process.env.KIT_KEY ??= "test-kit-key";
+process.env.APP_FEE_BPS ??= "25";
+process.env.APP_FEE_RECIPIENT ??= "0x0000000000000000000000000000000000000000";
+process.env.SUPABASE_SECRET_KEY ??= "test-secret-key";
+process.env.NEXT_PUBLIC_SUPABASE_URL ??= "https://example.supabase.co";
+process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??= "test-publishable-key";
+process.env.NEXT_PUBLIC_ARC_CHAIN ??= "Arc_Testnet";

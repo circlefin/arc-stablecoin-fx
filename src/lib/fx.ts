@@ -30,6 +30,21 @@ export function otherToken(t: FxToken): FxToken {
   return t === "USDC" ? "EURC" : "USDC";
 }
 
+/**
+ * Circle's AppKit Swap SDK has no seeded liquidity route for EURC -> USDC on
+ * Arc Testnet (always fails with error code 331001 / INPUT_UNSUPPORTED_ROUTE).
+ * See https://github.com/circlefin/arc-stablecoin-fx/issues/1. This is a
+ * routing gap in Circle's infra, not something fixable client-side, so both
+ * the server (lib/appkit/swap.ts) and the UI short-circuit on it directly
+ * instead of round-tripping to the SDK for a guaranteed failure.
+ */
+export function isUnsupportedSwapDirection(tokenIn: FxToken, tokenOut: FxToken): boolean {
+  return tokenIn === "EURC" && tokenOut === "USDC";
+}
+
+export const UNSUPPORTED_DIRECTION_MESSAGE =
+  "EURC → USDC swaps aren't supported on Arc Testnet yet (no routing liquidity). USDC → EURC works.";
+
 export function bpsToPercent(bps: number) {
   return bps / 100;
 }
