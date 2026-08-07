@@ -78,6 +78,7 @@ export function TradesTable({
   const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
   const [sort, setSort] = useState<SortState>(null);
   const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -114,6 +115,9 @@ export function TradesTable({
         .select(SELECT_COLS, { count: "exact" })
         .eq("user_id", userId);
       if (debouncedSearch) q = q.ilike("tx_hash", `%${debouncedSearch}%`);
+      if (statusFilter !== "all") {
+        q = q.eq("status", statusFilter);
+      }
       if (sort) {
         q = q.order(sort.key, { ascending: sort.dir === "asc" });
         if (sort.key !== "created_at") q = q.order("created_at", { ascending: false });
@@ -136,9 +140,9 @@ export function TradesTable({
     return () => {
       cancelled = true;
     };
-  }, [userId, page, pageSize, sort, debouncedSearch]);
+  }, [userId, page, pageSize, sort, debouncedSearch, statusFilter]);
 
-  const realtimeEnabled = page === 1 && sort === null && debouncedSearch === "";
+  const realtimeEnabled = page === 1 && sort === null && debouncedSearch === "" && statusFilter === "all";
   useEffect(() => {
     if (!realtimeEnabled) return;
     const supabase = createClient();
@@ -197,6 +201,21 @@ export function TradesTable({
           aria-label="Search by transaction hash"
         />
         <div className="flex items-center gap-2">
+          <Select value={statusFilter} onValueChange={(value) => {
+            setStatusFilter(value ?? "all");
+            setPage(1);
+          }}>
+            <SelectTrigger size="sm" className="w-40">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="submitted">Submitted</SelectItem>
+              <SelectItem value="confirmed">Confirmed</SelectItem>
+              <SelectItem value="failed">Failed</SelectItem>
+            </SelectContent>
+          </Select>
           <span className="text-xs text-muted-foreground">Rows per page</span>
           <Select value={String(pageSize)} onValueChange={(v) => changePageSize(Number(v))}>
             <SelectTrigger size="sm">
