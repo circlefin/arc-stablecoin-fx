@@ -41,7 +41,8 @@ export function percentToBps(pct: number) {
 export function applySlippageFloor(amountOut: string, slippageBps: number): string {
   const n = Number(amountOut);
   if (!Number.isFinite(n) || n <= 0) return "0";
-  const floor = n * (1 - slippageBps / 10_000);
+  const clampedBps = Math.max(0, Math.min(10_000, slippageBps));
+  const floor = Math.max(0, n * (1 - clampedBps / 10_000));
   return floor.toFixed(6);
 }
 
