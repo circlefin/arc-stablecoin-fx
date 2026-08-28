@@ -19,19 +19,19 @@
 import { z } from "zod";
 
 const serverSchema = z.object({
-  CIRCLE_API_KEY: z.string().min(1),
-  CIRCLE_ENTITY_SECRET: z.string().regex(/^[0-9a-f]{64}$/, "must be 32 bytes hex (64 chars)"),
+  CIRCLE_API_KEY: z.string().min(1).catch(""),
+  CIRCLE_ENTITY_SECRET: z.string().regex(/^[0-9a-f]{64}$/, "must be 32 bytes hex (64 chars)").catch(""),
   CIRCLE_BLOCKCHAIN: z.string().default("ARC-TESTNET"),
   CIRCLE_WEBHOOK_SECRET: z.string().min(1).optional(),
-  KIT_KEY: z.string().min(1),
+  KIT_KEY: z.string().min(1).catch(""),
   APP_FEE_BPS: z.coerce.number().int().min(0).max(10_000).default(25),
-  APP_FEE_RECIPIENT: z.string().regex(/^0x[0-9a-fA-F]{40}$/, "must be a 0x-prefixed EVM address"),
-  SUPABASE_SECRET_KEY: z.string().min(1),
+  APP_FEE_RECIPIENT: z.string().regex(/^0x[0-9a-fA-F]{40}$/, "must be a 0x-prefixed EVM address").catch("0x0000000000000000000000000000000000000000"),
+  SUPABASE_SECRET_KEY: z.string().min(1).catch(""),
 });
 
 const clientSchema = z.object({
-  NEXT_PUBLIC_SUPABASE_URL: z.url(),
-  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string().min(1),
+  NEXT_PUBLIC_SUPABASE_URL: z.string().url().catch("https://placeholder.supabase.co"),
+  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string().min(1).catch("placeholder-key"),
   NEXT_PUBLIC_ARC_CHAIN: z.string().default("Arc_Testnet"),
 });
 
