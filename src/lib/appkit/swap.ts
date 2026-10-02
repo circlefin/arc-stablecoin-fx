@@ -24,6 +24,12 @@ import { createCircleWalletsAdapter } from "@circle-fin/adapter-circle-wallets";
 import { clientEnv, serverEnv } from "@/lib/config";
 import type { FxToken } from "@/lib/fx";
 
+// `config.kitKey` below is being deprecated on the SDK side in favor of a
+// unified `apiKey` field that accepts either a kit key or a plain API key —
+// `kitKey` stays supported until it's removed. The currently pinned
+// @circle-fin/app-kit build's SwapConfig doesn't expose `apiKey` yet; switch
+// this over once it does.
+
 let cachedKit: AppKit | null = null;
 let cachedAdapter: ReturnType<typeof createCircleWalletsAdapter> | null = null;
 
